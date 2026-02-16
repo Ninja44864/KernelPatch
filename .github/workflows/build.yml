@@ -9,12 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Use the stable nttld action instead of the broken nandroid7 one
       - name: Setup NDK
-        uses: nandroid7/setup-ndk@v1
+        uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r26b
+          ndk-version: r27c  # Updated to a stable 2025/2026 version
+          add-to-path: true
+
       - name: Build Module
-        run: make
+        run: |
+          make
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
