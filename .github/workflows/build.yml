@@ -17,10 +17,10 @@ jobs:
 
       - name: Build Module
         run: |
-          # The -I flag tells the compiler to look in the 'include' folder for kpm.h
+          # The compiler needs the include path to find kpmodule.h
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang \
           -O2 -Wall -target aarch64-linux-android \
-          -I./include \
+          -I$GITHUB_WORKSPACE/include \
           -c kpms/demo-hello/hello.c -o prod_off.kpm
 
       - name: Upload Artifact
