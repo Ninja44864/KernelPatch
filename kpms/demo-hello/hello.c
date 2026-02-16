@@ -1,7 +1,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
-#include <kpm.h>
+#include <kpmodule.h>
 
 // This runs as the kernel initializes
 static int __init prod_off_init(void) {
