@@ -1,0 +1,21 @@
+name: Build KPM
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup NDK
+        uses: nandroid7/setup-ndk@v1
+        with:
+          ndk-version: r26b
+      - name: Build Module
+        run: |
+          make
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod_off_kpm
+          path: "*.kpm"
