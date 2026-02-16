@@ -1,48 +1,22 @@
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/string.h>
+name: Build KPM
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
-/* * APatch KPM: Secure Prod Off for Motorola Razr (leap)
- * This module hooks the kernel command line to neutralize 
- * hardware-level production flags.
- */
-
-static int __init prod_off_init(void) {
-    // Look up the address of the saved kernel command line
-    char *cmdline = (char *)kallsyms_lookup_name("saved_command_line");
-    
-    if (cmdline) {
-        // 1. Force Secure Hardware to 0 (Off)
-        char *sec_hw = strstr(cmdline, "androidboot.secure_hardware=1");
-        if (sec_hw) {
-            // Index 28 is the '1' in that specific string
-            sec_hw[28] = '0';
-        }
-
-        // 2. Force Bootmode to Factory
-        // This triggers your neo_inject rules and diagnostic ports
-        char *mode = strstr(cmdline, "androidboot.bootmode=normal");
-        if (mode) {
-            // We overwrite "normal" with "factory"
-            // Note: Use memcpy to ensure we don't null-terminate the whole string
-            memcpy(mode + 21, "factory", 7);
-        }
-
-        // 3. Neutralize the Production Flag
-        char *is_prod = strstr(cmdline, "ro.product.is_production=true");
-        if (is_prod) {
-            // Overwrite "true" with "fals" (4 characters)
-            memcpy(is_prod + 25, "fals", 4);
-        }
-    }
-    
-    return 0;
-}
-
-static void __exit prod_off_exit(void) {
-    // Cleanup - not strictly necessary for this specific hack
-}
-
-module_init(prod_off_init);
-module_exit(prod_off_exit);
-MODULE_LICENSE("GPL");
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup NDK
+        uses: nandroid7/setup-ndk@v1
+        with:
+          ndk-version: r26b
+      - name: Build Module
+        run: make
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod_off_kpm
+          path: "*.kpm"
