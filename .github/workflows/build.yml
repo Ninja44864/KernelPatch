@@ -17,13 +17,11 @@ jobs:
 
       - name: Build Module
         run: |
-          # 1. Navigate to the actual folder where the code lives
-          cd kpms/demo-hello/
-          
-          # 2. Compile specifically for the Razr's architecture (arm64)
-          # This uses the Android NDK clang directly to avoid host header conflicts
+          # The -I flag tells the compiler to look in the 'include' folder for kpm.h
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang \
-          -O2 -Wall -target aarch64-linux-android -I../../include -c hello.c -o ../../prod_off.kpm
+          -O2 -Wall -target aarch64-linux-android \
+          -I./include \
+          -c kpms/demo-hello/hello.c -o prod_off.kpm
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
