@@ -1,8 +1,6 @@
 name: Build KPM
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   build:
@@ -19,17 +17,16 @@ jobs:
 
       - name: Build Module
         run: |
-          # We use a generic kernel header set for the build
-          # APatch will handle the specific kernel offsets on-device
-          sudo apt-get update && sudo apt-get install -y linux-headers-$(uname -r)
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- KDIR=/lib/modules/$(uname -r)/build
+          # 1. Navigate to the actual folder where the code lives
+          cd kpms/demo-hello/
+          
+          # 2. Compile specifically for the Razr's architecture (arm64)
+          # This uses the Android NDK clang directly to avoid host header conflicts
+          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang \
+          -O2 -Wall -target aarch64-linux-android -I../../include -c hello.c -o ../../prod_off.kpm
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: prod_off_kpm
-          path: |
-            src/*.ko
-            *.ko
-            src/*.kpm
-            *.kpm
+          path: "prod_off.kpm"
