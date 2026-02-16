@@ -8,21 +8,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # Use the stable nttld action instead of the broken nandroid7 one
       - name: Setup NDK
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r27c  # Updated to a stable 2025/2026 version
+          ndk-version: r27c
           add-to-path: true
 
       - name: Build Module
         run: |
-          make
+          # We use a generic kernel header set for the build
+          # APatch will handle the specific kernel offsets on-device
+          sudo apt-get update && sudo apt-get install -y linux-headers-$(uname -r)
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- KDIR=/lib/modules/$(uname -r)/build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: prod_off_kpm
-          path: "*.kpm"
+          path: |
+            src/*.ko
+            *.ko
+            src/*.kpm
+            *.kpm
