@@ -1,10 +1,10 @@
-# Ensure this matches your filename in the src folder
-obj-m += src/kpm.o
+# This MUST match the name of your file in the src folder
+# If your file is src/hello.c, keep it as src/hello.o
+obj-m += src/hello.o
 
-# This is the standard path where the NDK/APatch looks for the build system
-KDIR ?= /lib/modules/$(shell uname -r)/build
-
+# The KDIR is provided by the environment in the GitHub runner
 all:
+	@echo "Compiling KPM for Android..."
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
