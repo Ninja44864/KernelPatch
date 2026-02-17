@@ -1,6 +1,4 @@
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/string.h>
+#include <compiler.h>
 #include <kpmodule.h>
 
 // This runs as the kernel initializes
