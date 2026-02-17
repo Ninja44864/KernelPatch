@@ -17,10 +17,17 @@ jobs:
 
       - name: Build Module
         run: |
-          # The compiler needs the include path to find kpmodule.h
+          # 1. This debug step will show us what the folder actually contains
+          echo "Listing include folder contents:"
+          ls -R include/
+          
+          # 2. Compile with absolute paths to the workspace
+          # We include the root, the include folder, and the kernel folder
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang \
           -O2 -Wall -target aarch64-linux-android \
           -I$GITHUB_WORKSPACE/include \
+          -I$GITHUB_WORKSPACE/kernel \
+          -I$GITHUB_WORKSPACE \
           -c kpms/demo-hello/hello.c -o prod_off.kpm
 
       - name: Upload Artifact
